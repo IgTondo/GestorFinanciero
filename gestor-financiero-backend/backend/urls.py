@@ -1,5 +1,5 @@
 """
-URL configuration for gestor project.
+URL configuration for backend project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -15,8 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from cuentas.views import LoginAPI, RegisterAPI
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/gastos/', include('gastos.urls')),
+    path('api/login/', LoginAPI.as_view()),
+    path("api/register/", RegisterAPI.as_view()),
 ]
