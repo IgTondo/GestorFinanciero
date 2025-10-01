@@ -18,12 +18,12 @@ export default function ChartExpenses({ transactions }: Props) {
     value,
   }));
 
-  // 👉 Si no hay egresos, mostrar un slice "Sin gastos"
+  // 👉 Si no hay egresos, forzar un slice ficticio
   if (chartData.length === 0) {
-    chartData = [{ name: "Sin gastos", value: 0 }];
+    chartData = [{ name: "Sin gastos", value: 1 }];
   }
 
-  const total = chartData.reduce((sum, d) => sum + d.value, 0);
+  const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
 
   const COLORS = ["#6366f1", "#f43f5e", "#10b981", "#f59e0b", "#8b5cf6", "#06b6d4"];
 
@@ -39,7 +39,7 @@ export default function ChartExpenses({ transactions }: Props) {
             cx="50%"
             cy="50%"
             outerRadius={100}
-            label
+            label={({ name }) => name} // siempre muestra el label
           >
             {chartData.map((_, i) => (
               <Cell key={i} fill={COLORS[i % COLORS.length]} />
@@ -50,7 +50,7 @@ export default function ChartExpenses({ transactions }: Props) {
         </PieChart>
       </ResponsiveContainer>
 
-      {/* 👉 Mostrar el saldo total (0 si no hay datos) */}
+      {/* Total real de egresos */}
       <div className="mt-4 text-center text-gray-700">
         <span className="text-sm">Total de egresos: </span>
         <span className="font-semibold">${total}</span>
