@@ -22,8 +22,8 @@ export default function LandingPage() {
         <div className="flex items-center gap-3">
           <Logo />
           <div>
-            <h1 className="text-lg font-semibold">Gestor Financiero</h1>
-            <p className="text-xs text-gray-500">Tu app de finanzas personales</p>
+            <h1 className="text-lg font-semibold">Gesta</h1>
+            <p className="text-xs text-gray-500">Que tus cuentas no te hagan cuentos.</p>
           </div>
         </div>
 
@@ -64,7 +64,7 @@ export default function LandingPage() {
             </motion.h2>
 
             <p className="mt-4 text-gray-600 max-w-xl">
-              Gestor Financiero te ayuda a ver tus ingresos, gastos y metas en un solo lugar.
+              Gesta te ayuda a ver tus ingresos, gastos y metas en un solo lugar.
               Automatiza presupuestos, conecta cuentas y recibe reportes claros para tomar decisiones inteligentes.
             </p>
 
@@ -76,11 +76,11 @@ export default function LandingPage() {
             <dl className="mt-8 grid grid-cols-2 gap-4 max-w-md">
               <div className="flex flex-col">
                 <dt className="text-sm text-gray-500">Usuarios</dt>
-                <dd className="font-semibold text-lg">+12.000</dd>
+                <dd className="font-semibold text-lg">+4</dd>
               </div>
               <div className="flex flex-col">
                 <dt className="text-sm text-gray-500">Países</dt>
-                <dd className="font-semibold text-lg">15</dd>
+                <dd className="font-semibold text-lg">1</dd>
               </div>
             </dl>
           </div>
@@ -139,13 +139,13 @@ export default function LandingPage() {
 
         {/* Features */}
         <section id="features" className="py-12">
-          <h3 className="text-2xl font-bold">Qué podés hacer con Gestor Financiero</h3>
+          <h3 className="text-2xl font-bold">Qué podés hacer con Gesta</h3>
           <p className="text-gray-600 mt-2 max-w-2xl">Herramientas pensadas para simplificar tu día a día y ayudarte a cumplir metas.</p>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Feature title="Presupuestos automáticos" description="Crea presupuestos inteligentes que se adaptan a tus hábitos." />
-            <Feature title="Conexión de cuentas" description="Importa transacciones automáticamente de bancos y tarjetas." />
-            <Feature title="Metas & reportes" description="Define metas de ahorro y recibe reportes claros y exportables." />
+            <Feature title="Gastos Categorizados" description="Registra tus datos según categoría para mayor control sobre tu dinero" />
+            <Feature title="Cuentas Compartidas" description="Comparte cuentas con otros para gastos del hogar, viajes, familias, etc." />
+            <Feature title="Metas & reportes" description="Define metas de ahorro y recibe reportes claros e inteligentes." />
           </div>
         </section>
 
@@ -153,9 +153,9 @@ export default function LandingPage() {
         <section id="how" className="py-12 bg-white rounded-2xl p-6 shadow-sm">
           <h3 className="text-xl font-semibold">Cómo funciona</h3>
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Step number={1} title="Crear cuenta" desc="Registrate en segundos y conectá tus cuentas bancarias de forma segura." />
+            <Step number={1} title="Crear cuenta" desc="Registrate con tu mail de preferencia en segundos." />
             <Step number={2} title="Organizar gastos" desc="Etiquetá y agrupá gastos automáticamente." />
-            <Step number={3} title="Ahorra smarter" desc="Establecé metas y seguí tu progreso con notificaciones." />
+            <Step number={3} title="Ahorra smarter" desc="Establecé metas y seguí tu progreso con gráficas y reportes inteligentes." />
           </div>
         </section>
 
@@ -164,16 +164,15 @@ export default function LandingPage() {
           <h3 className="text-2xl font-bold">Planes</h3>
           <p className="text-gray-600 mt-2">Empieza gratis o elegí un plan premium para funciones avanzadas.</p>
 
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <CardPlan title="Gratis" price="0" perks={["Presupuestos básicos", "Soporte por email"]} ctaText="Comenzar gratis" />
-            <CardPlan title="Pro" price="7" perks={["Conexión bancaria", "Reportes exportables", "Soporte prioritario"]} ctaText="Pro: $7 mes" highlight/>
-            <CardPlan title="Empresa" price="29" perks={["Múltiples usuarios", "Exportaciones CSV/Excel", "SLA dedicado"]} ctaText="Contactar ventas" />
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardPlan title="Gratis" price="0" perks={["Categorías predeterminadas", "Funcionalidades básicas completas", "Soporte por email"]} ctaText="Comenzar gratis" />
+            <CardPlan title="Pro" price="7" perks={["Categorías personalizadas", "Reportes inteligentes", "Soporte prioritario"]} ctaText="Pro: $7 mes" highlight/>
           </div>
         </section>
 
         {/* Footer */}
         <footer className="mt-12 py-8 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} Gestor Financiero 
+          © {new Date().getFullYear()} Gesta 
         </footer>
       </main>
 
