@@ -45,13 +45,23 @@ class CustomUser(AbstractUser):
         return self.email
 
 class Account(models.Model):
-    name = models.CharField(max_length=100, help_text="Ej: Cuenta Personal, Hogar, Vacaciones", primary_key=True)
+    name = models.CharField(max_length=100, help_text="Ej: Cuenta Personal, Hogar, Vacaciones")
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='owned_accounts' # Clave para acceder a las cuentas que posee un usuario
+    )
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL, 
         related_name="accounts",
         blank=True 
     )
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
+    class Meta:
+        verbose_name = "Cuenta"
+        verbose_name_plural = "Cuentas"
+        ordering = ['-created_at']
+ 
     def __str__(self):
         return self.name

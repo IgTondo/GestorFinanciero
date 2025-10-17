@@ -10,12 +10,27 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'first_name', 'last_name']
 
 class AccountSerializer(serializers.ModelSerializer):
-    members = UserSerializer(many=True, read_only=True)
-
     class Meta:
         model = Account
-        fields = ['id', 'name', 'members', 'created_at']
+        fields = ['id', 'name', 'owner', 'members', 'created_at']
         
+    members = UserSerializer(many=True, read_only=True)
+    owner = UserSerializer(read_only=True)
+    
+    def validate(self, data):
+        """
+        Verifica que el dueño no tenga ya una cuenta con el mismo nombre.
+        """
+        user = self.context['request'].user
+        account_name = data.get('name')
+
+        # La validación ahora usa la nueva relación 'owned_accounts'
+        if user.owned_accounts.filter(name=account_name).exists():
+            raise serializers.ValidationError(
+                f"Ya eres dueño de una cuenta con el nombre '{account_name}'."
+            )
+        
+        return data
         
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True, style={'input_type': 'password'})

@@ -42,5 +42,5 @@ class AccountViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         # Al crear una nueva cuenta, añadimos al usuario actual como el primer miembro
-        account = serializer.save()
+        account = serializer.save(owner=self.request.user)
         account.members.add(self.request.user)
