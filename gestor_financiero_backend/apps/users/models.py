@@ -43,6 +43,20 @@ class CustomUser(AbstractUser):
     role = models.CharField(max_length=10, choices=Role.choices, default=Role.NORMAL)
     def __str__(self):
         return self.email
+    
+class Membership(models.Model):
+    """
+    Modelo intermedio que conecta a un Usuario con una Cuenta.
+    Aquí es donde guardamos el alias personalizado.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    account = models.ForeignKey('Account', on_delete=models.CASCADE)
+    alias = models.CharField(max_length=100, blank=True, null=True, help_text="Apodo personal para esta cuenta")
+    date_joined = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Un usuario solo puede ser miembro de una cuenta una vez
+        unique_together = ('user', 'account')
 
 class Account(models.Model):
     name = models.CharField(max_length=100, help_text="Ej: Cuenta Personal, Hogar, Vacaciones")
@@ -54,7 +68,8 @@ class Account(models.Model):
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL, 
         related_name="accounts",
-        blank=True 
+        blank=True,
+        through="Membership"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     
