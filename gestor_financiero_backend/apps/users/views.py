@@ -54,7 +54,7 @@ class AccountViewSet(viewsets.ModelViewSet):
     def my_membership(self, request, pk=None):
         """
         Endpoint para que un usuario vea o actualice su alias en una cuenta.
-        URL: PATCH /api/accounts/{id}/my-membership/
+        URL: PATCH /api/accounts/{id}/alias/
         """
         account = self.get_object()
         try:

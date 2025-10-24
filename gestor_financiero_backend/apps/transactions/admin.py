@@ -5,5 +5,3 @@ from apps.users.models import Account, CustomUser
 
 admin.site.register(Category)
 admin.site.register(Transaction)
-admin.site.register(Account)
-admin.site.register(CustomUser)
