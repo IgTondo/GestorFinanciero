@@ -18,7 +18,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-900">
       {/* Header */}
-      <header className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+      <header className="px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Logo />
           <div>
@@ -51,7 +51,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <main className="max-w-7xl mx-auto px-6">
+      <main className="px-6">
         <section className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center py-12">
           <div>
             <motion.h2
