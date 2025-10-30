@@ -1,10 +1,12 @@
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet
+from apps.users.urls import router as users_router
+from rest_framework_nested.routers import NestedSimpleRouter
+from .views import CategoryViewSet, TransactionViewSet
 
-router = DefaultRouter()
-router.register(r'categories', CategoryViewSet, basename='category')
+accounts_router = NestedSimpleRouter(users_router, r'accounts', lookup='account')
+accounts_router.register(r'transactions', TransactionViewSet, basename='account-transactions')
+accounts_router.register(r'categories', CategoryViewSet, basename='account-categories')
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(accounts_router.urls))
 ]

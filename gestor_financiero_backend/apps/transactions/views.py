@@ -1,11 +1,27 @@
 # apps/transactions/views.py
 from rest_framework import viewsets, permissions
-from .models import Category
-from .serializers import CategorySerializer
+from .models import Category, Transaction
+from .serializers import CategorySerializer, TransactionSerializer
 from apps.users.permissions import IsPremiumUser 
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class AccountNestedViewMixin:
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_account_object(self):
+        """
+        Obtiene el objeto Account basado en la URL y verifica que el usuario sea miembro.
+        """
+        # 1. Obtenemos el 'account_pk' de los kwargs de la URL
+        account_pk = self.kwargs.get('account_pk')
+        account = get_object_or_404(
+            self.request.user.accounts.all(), 
+            pk=account_pk
+        )
+        return account
+
+class CategoryViewSet(viewsets.ModelViewSet, AccountNestedViewMixin):
     serializer_class = CategorySerializer
 
     def get_permissions(self):
@@ -14,11 +30,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
         - Todos pueden ver (GET).
         - Solo Premium pueden crear (POST), actualizar (PUT) o borrar (DELETE).
         """
+        permission_list = super().get_permissions()
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            self.permission_classes = [permissions.IsAuthenticated, IsPremiumUser]
-        else:
-            self.permission_classes = [permissions.IsAuthenticated]
-        return super().get_permissions()
+            permission_list.append(IsPremiumUser())
+        return permission_list
 
     def get_queryset(self):
         """
@@ -26,25 +41,42 @@ class CategoryViewSet(viewsets.ModelViewSet):
         personalizadas de la cuenta del usuario.
         """
         # Asumimos que la URL es algo como /api/accounts/{account_id}/categories/
-        account_id = self.kwargs.get('account_pk')
-        # Filtramos por las cuentas a las que el usuario pertenece para seguridad
-        user_accounts = self.request.user.accounts.all()
-        target_account = user_accounts.filter(pk=account_id).first()
-
-        if not target_account:
-            return Category.objects.none() # Si no tiene acceso a la cuenta, no ve nada
-
-        # Usamos Q objects para una consulta OR
-        return Category.objects.filter(
-            Q(account__isnull=True) | Q(account=target_account)
-        )
+        account = self.get_account_object()
+        if self.action in ['list', 'retrieve']:
+            # Usamos Q objects para una consulta OR
+            return Category.objects.filter(
+                Q(account__isnull=True) | Q(account=account)
+            ).order_by('name')
+        return Category.objects.filter(account=account).order_by('name')
 
     def perform_create(self, serializer):
         """
         Al crear una categoría, la asignamos a la cuenta correcta.
         """
-        account_id = self.kwargs.get('account_pk')
-        target_account = self.request.user.accounts.filter(pk=account_id).first()
+        account = self.get_account_object()
         # La validación de permiso ya se hizo, aquí solo guardamos
-        serializer.save(account=target_account)
+        serializer.save(account=account)
+        
+class TransactionViewSet(viewsets.ModelViewSet, AccountNestedViewMixin):
+    """
+    ViewSet para manejar el CRUD de Transacciones.
+    """
+    serializer_class = TransactionSerializer
+
+    def get_queryset(self):
+        """
+        Esta consulta filtra las transacciones
+        basadas en la cuenta de la URL.
+        """
+        # 1. Obtenemos la cuenta (la función helper ya valida el permiso)
+        account = self.get_account_object()
+        return Transaction.objects.filter(account=account).order_by('-date')
+    
+    def perform_create(self, serializer):
+        """
+        Inyecta la cuenta (obtenida de la URL) en la transacción
+        antes de guardarla.
+        """
+        account = self.get_account_object()
+        serializer.save(account=account)
         
