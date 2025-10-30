@@ -9,7 +9,7 @@ export interface LoginModalProps {
 }
 
 export default function LoginModal({ onClose }: LoginModalProps) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -19,16 +19,16 @@ export default function LoginModal({ onClose }: LoginModalProps) {
     setError('');
     try {
       // 4. Llamar a la API del backend
-      const response = await axios.post('http://localhost:8000/api/login/', {
-        username: username,
+      const response = await axios.post('http://localhost:8000/api/auth/login/', {
+        email: email,
         password: password,
       });
 
       // 5. Si es exitoso, llamar a la función 'login' del contexto
       //    (Esta se encargará de guardar el token y redirigir)
-      if (response.data.token) {
-        login(response.data.token);
-        onClose(); // Cierra el modal
+      if (response.data.access) {
+        login(response.data.access); // Usa .access
+        onClose();
       } else {
         setError('No se recibió un token. Intenta de nuevo.');
       }
@@ -47,11 +47,11 @@ export default function LoginModal({ onClose }: LoginModalProps) {
           {/* Cambiamos la etiqueta a 'Usuario' ya que el backend espera 'username' */}
           <label className="text-sm text-gray-600">Usuario</label>
           <input
-            type="text"
+            type="email"
             required
             className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div>

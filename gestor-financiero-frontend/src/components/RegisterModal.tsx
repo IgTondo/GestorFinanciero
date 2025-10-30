@@ -10,7 +10,6 @@ export interface RegisterModalProps {
 export default function RegisterModal({ onClose }: RegisterModalProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -28,16 +27,16 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
 
     try {
      
-      const response = await axios.post('http://localhost:8000/api/register/', {
-        username: username,
+      const response = await axios.post('http://localhost:8000/api/auth/register/', {
+        first_name: firstName, 
+        last_name: lastName,
         email: email,
         password: password,
-        first_name: firstName, 
-        last_name: lastName
+        password2: confirm
       });
 
-      if (response.data.token) {
-        login(response.data.token);
+      if (response.data.tokens && response.data.tokens.access) {
+        login(response.data.tokens.access);
         onClose();
       } else {
         setError('Error en el registro. Intenta de nuevo.');
@@ -81,16 +80,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
           </div>
         </div>
 
-        <div>
-          <label className="text-sm text-gray-600">Nombre de Usuario</label>
-          <input
-            type="text"
-            required
-            className="mt-1 w-full border border-gray-200 rounded-lg px-3 py-2"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
+      
 
         <div>
           <label className="text-sm text-gray-600">Email</label>
