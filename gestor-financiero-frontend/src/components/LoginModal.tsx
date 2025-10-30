@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Modal from './Modal';
-// import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
+
 
 export interface LoginModalProps {
   onClose: () => void;
@@ -10,30 +12,40 @@ export default function LoginModal({ onClose }: LoginModalProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  // const { login } = useAuth();
+  const { login } = useAuth();
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
-    // try {
-    //         const response = await axios.post('http://localhost:8000/api/login/', { username, password });
-    //         console.log('Login exitoso:', response.data);
-    //         // Guarda el token y navega usando el contexto de autenticación
-    //         login(response.data.token);
-    //         onClose(); // Cierra el modal
-    //     } catch (err) {
-    //         setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
-    //         console.error('Error de login:', err?.response?.data || err?.message);
-    //     }
-    alert('Iniciando sesión (demo)');
-    onClose();
+    try {
+      // 4. Llamar a la API del backend
+      const response = await axios.post('http://localhost:8000/api/login/', {
+        username: username,
+        password: password,
+      });
+
+      // 5. Si es exitoso, llamar a la función 'login' del contexto
+      //    (Esta se encargará de guardar el token y redirigir)
+      if (response.data.token) {
+        login(response.data.token);
+        onClose(); // Cierra el modal
+      } else {
+        setError('No se recibió un token. Intenta de nuevo.');
+      }
+    } catch (err:any) {
+      // 6. Manejar errores
+      setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
+      console.error('Error de login:', err.response?.data || err.message);
+    }
   };
+   
 
   return (
     <Modal title="Iniciar sesión" onClose={onClose}>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
-          <label className="text-sm text-gray-600">Email</label>
+          {/* Cambiamos la etiqueta a 'Usuario' ya que el backend espera 'username' */}
+          <label className="text-sm text-gray-600">Usuario</label>
           <input
             type="text"
             required

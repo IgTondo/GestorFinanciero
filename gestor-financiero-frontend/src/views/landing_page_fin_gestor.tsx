@@ -33,7 +33,7 @@ export default function LandingPage() {
 
           {/* Botones de Login y Registro arriba a la derecha */}
           <button
-            /*onClick={() => setShowLogin(true)}*/
+            onClick={() => setShowLogin(true)}
             className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-400 hover:shadow-sm  text-gray-800"
             aria-label="Iniciar sesión"
           >
@@ -41,7 +41,7 @@ export default function LandingPage() {
           </button>
 
           <button
-            /*onClick={() => setShowRegister(true)}*/
+            onClick={() => setShowRegister(true)}
             className="ml-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md hover:opacity-95"
             aria-label="Registrarse"
           >
