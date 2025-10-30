@@ -7,7 +7,7 @@ class IsPremiumUser(permissions.BasePermission):
     """
     message = "Esta funcionalidad es exclusiva para usuarios Premium."
 
-    def has_permission(self, request):
+    def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.role == 'PREMIUM'
     
 class IsAccountOwner(permissions.BasePermission):
