@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'apps.users',
-    'apps.transactions'
+    'apps.transactions',
+    'apps.automation'
 ]
 
 REST_FRAMEWORK = {
