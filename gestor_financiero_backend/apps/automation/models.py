@@ -99,3 +99,59 @@ class EventRule(models.Model):
     class Meta:
         verbose_name = "Regla de Evento"
         verbose_name_plural = "Reglas de Evento"
+
+
+class ScheduledRule(models.Model):
+    # --- Configuración General ---
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='scheduled_rules')
+    name = models.CharField(max_length=100, help_text="Nombre de la regla (ej: 'Pagar Alquiler')")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='scheduled_rules')
+    is_active = models.BooleanField(default=True)
+
+    # --- Trigger (El "SI...") ---
+    schedule_day_of_month = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(31)],
+        help_text="Día del mes (1-31) en que se ejecuta la regla."
+    )
+
+    # --- Origen (El "DESDE DÓNDE...") ---
+    source_category = models.ForeignKey(
+        Category, 
+        on_delete=models.SET_NULL, 
+        null=True,
+        related_name='scheduled_source_rules',
+        help_text="Categoría de origen (de dónde sale el dinero)."
+    )
+
+    # --- Acción (El "ENTONCES...") ---
+    action_type = models.CharField(
+        max_length=20, 
+        choices=ActionType.choices,
+        help_text="Tipo de acción a realizar (Monto Fijo o Porcentaje)."
+    )
+    action_destination_category = models.ForeignKey(
+        Category, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='scheduled_action_rules',
+        help_text="Categoría de destino (a dónde va el dinero)."
+    )
+    action_description = models.CharField(max_length=255, blank=True, help_text="Descripción para las nuevas transacciones (ej: 'Pago Alquiler').")
+
+    # Montos
+    action_fixed_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    action_percentage = models.DecimalField(
+        max_digits=5, 
+        decimal_places=2, 
+        null=True, 
+        blank=True,
+        help_text="Porcentaje a mover (requiere lógica de Celery para calcular el balance de la categoría origen)."
+    )
+
+    class Meta:
+        verbose_name = "Regla Programada"
+        verbose_name_plural = "Reglas Programadas"
+        ordering = ['schedule_day_of_month', 'name']
+
+    def __str__(self):
+        return f"{self.name} (Día {self.schedule_day_of_month})"

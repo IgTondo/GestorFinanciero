@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Q
-from .models import EventRule
+from .models import EventRule, ScheduledRule
 from apps.transactions.models import Category
 
 class EventRuleSerializer(serializers.ModelSerializer):
@@ -55,4 +55,44 @@ class EventRuleSerializer(serializers.ModelSerializer):
         if data.get('action_type') == 'PERCENTAGE' and not data.get('action_percentage'):
             raise serializers.ValidationError("Debe proveer 'action_percentage' para reglas de porcentaje.")
 
+        return data
+
+
+class ScheduledRuleSerializer(serializers.ModelSerializer):
+    # 'account' y 'created_by' son read_only
+    account = serializers.StringRelatedField(read_only=True)
+    created_by = serializers.StringRelatedField(read_only=True)
+
+    # Filtramos los 'choices' de categorías dinámicamente
+    source_category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    action_destination_category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+
+    class Meta:
+        model = ScheduledRule
+        fields = '__all__'
+        read_only_fields = ['account', 'created_by']
+
+    def __init__(self, *args, **kwargs):
+        """Filtra los querysets de categorías"""
+        super().__init__(*args, **kwargs)
+        
+        request = self.context.get('request')
+        if not request:
+            return
+
+        # Obtenemos la cuenta desde el 'view'
+        account = self.context['view'].get_account_object()
+
+        # Un usuario solo puede elegir categorías globales O las de esta cuenta
+        valid_categories = Category.objects.filter(
+            Q(account__isnull=True) | Q(account=account)
+        ).distinct()
+        
+        self.fields['source_category'].queryset = valid_categories
+        self.fields['action_destination_category'].queryset = valid_categories
+
+    def validate(self, data):
+        """Evita que el origen y el destino sean el mismo"""
+        if data.get('source_category') == data.get('action_destination_category'):
+            raise serializers.ValidationError("La categoría de origen y destino no pueden ser la misma.")
         return data
