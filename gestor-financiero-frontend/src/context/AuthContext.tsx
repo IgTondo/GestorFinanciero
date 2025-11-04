@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // Definimos el tipo para el contexto
 interface AuthContextType {
     isAuthenticated: boolean;
-    login: (token: string) => void;
+    login: (accessToken: string, refreshToken: string) => void;
     logout: () => void;
 }
 
@@ -28,20 +28,22 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElement => {
   
     //Verifica si el usuario ya esta logeado
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('userToken'));
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!localStorage.getItem('accessToken'));
   
   
     const navigate = useNavigate();
     //Acepta el usuario y le envia al dashboard
-    const login = (token: string) => {
-        localStorage.setItem('userToken', token);
+    const login = (accessToken: string, refreshToken: string) => {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken',refreshToken);
         setIsAuthenticated(true);
-        navigate('/dashboard');
+        navigate('/accounts');
     };
 
     //le quita el token al usuario y envia a la landing page
     const logout = () => {
-        localStorage.removeItem('userToken');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken')
         setIsAuthenticated(false);
         navigate('/');
     };

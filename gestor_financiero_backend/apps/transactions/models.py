@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from apps.users.models import Account
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -29,7 +30,7 @@ class Transaction(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(default=timezone.now)
     transaction_type = models.CharField(max_length=10, choices=[('INCOME', 'Ingreso'), ('EXPENSE', 'Egreso')])
     created_by_rule = models.BooleanField(default=False)
 

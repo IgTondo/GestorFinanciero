@@ -36,7 +36,7 @@ export default function RegisterModal({ onClose }: RegisterModalProps) {
       });
 
       if (response.data.tokens && response.data.tokens.access) {
-        login(response.data.tokens.access);
+        login(response.data.tokens.access, response.data.tokens.refresh);
         onClose();
       } else {
         setError('Error en el registro. Intenta de nuevo.');

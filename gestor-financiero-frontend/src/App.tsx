@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./views/landing_page_fin_gestor";
 import Dashboard from "./views/Dashboard";
+import { AccountsPage } from "./views/AccountsPage";
 import { useAuth } from "./context/AuthContext";
 
 // Un componente simple para rutas protegidas
@@ -18,13 +19,22 @@ export default function App() {
         path="/"
         element={
           // Si ya está autenticado, ir directo al dashboard
-          isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />
+          isAuthenticated ? <Navigate to="/accounts" replace /> : <LandingPage />
         }
       />
 
       {/* Si no esta logeado hace que pase pro la ruta protegida para asegurarse que tiene usuario */}
       <Route
-        path="/dashboard"
+        path="/accounts"
+        element={
+          <ProtectedRoute>
+            <AccountsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/:accountId"
         element={
           <ProtectedRoute>
             <Dashboard />

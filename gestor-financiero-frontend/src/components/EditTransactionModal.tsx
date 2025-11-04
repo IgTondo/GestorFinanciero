@@ -1,50 +1,83 @@
+// src/components/EditTransactionModal.tsx
 import React, { useState, useMemo, useEffect } from "react";
+import Modal from "./Modal";
 import type { Transaction, Category } from "../views/Dashboard";
 
 const API_BASE_URL = "http://localhost:8000";
 
-interface Props {
+interface EditTransactionModalProps {
   accountId: string;
+  transaction: Transaction;
   categories: Category[];
-  onTransactionCreated: (tx: Transaction) => void;
+  onUpdated: (tx: Transaction) => void;
+  onDeleted: (id: number) => void;
+  onClose: () => void;
 }
 
-const TransactionForm: React.FC<Props> = ({
+const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   accountId,
+  transaction,
   categories,
-  onTransactionCreated,
+  onUpdated,
+  onDeleted,
+  onClose,
 }) => {
-  const [type, setType] = useState<"INCOME" | "EXPENSE">("EXPENSE");
-  const [categoryId, setCategoryId] = useState<string>("");
-  const [amount, setAmount] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [date, setDate] = useState<string>(""); // 👈 fecha elegida por el usuario (YYYY-MM-DD)
+  // 🔒 Tipo fijo: no se puede cambiar ingreso/egreso
+  const [transactionType] = useState<"INCOME" | "EXPENSE">(
+    transaction.transaction_type
+  );
+
+  const [categoryId, setCategoryId] = useState<string>(() => {
+    if (typeof transaction.category === "number") {
+      return String(transaction.category);
+    }
+    if (transaction.category && typeof transaction.category === "object") {
+      // @ts-ignore
+      return transaction.category.id ? String(transaction.category.id) : "";
+    }
+    return "";
+  });
+
+  const [amount, setAmount] = useState<string>(
+    typeof transaction.amount === "string"
+      ? transaction.amount
+      : transaction.amount.toString()
+  );
+  const [description, setDescription] = useState<string>(
+    transaction.description || ""
+  );
+  const [date, setDate] = useState<string>(transaction.date.slice(0, 10)); // YYYY-MM-DD
 
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔍 Categorías según tipo (igual que antes: INCOME -> "Ingreso", EXPENSE -> el resto)
+  // 🔍 Categorías visibles según el tipo (igual que en TransactionForm)
   const visibleCategories = useMemo(() => {
     if (!categories.length) return [];
-    if (type === "INCOME") {
+
+    if (transactionType === "INCOME") {
       return categories.filter(
         (c) => c.name.toLowerCase() === "ingreso"
       );
     }
+
     return categories.filter(
       (c) => c.name.toLowerCase() !== "ingreso"
     );
-  }, [categories, type]);
+  }, [categories, transactionType]);
 
-  // Si cambia el tipo, aseguramos que haya una categoría válida seleccionada
+  // Asegurarnos de que la categoría seleccionada sea válida para el tipo
   useEffect(() => {
     if (!visibleCategories.length) {
       setCategoryId("");
       return;
     }
+
     const exists = visibleCategories.some(
       (c) => String(c.id) === categoryId
     );
+
     if (!exists) {
       setCategoryId(String(visibleCategories[0].id));
     }
@@ -109,7 +142,7 @@ const TransactionForm: React.FC<Props> = ({
     return res;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -123,7 +156,7 @@ const TransactionForm: React.FC<Props> = ({
     }
     if (!visibleCategories.length || !categoryId) {
       setError(
-        type === "INCOME"
+        transactionType === "INCOME"
           ? "No hay una categoría 'Ingreso' configurada."
           : "Seleccioná una categoría válida."
       );
@@ -134,17 +167,17 @@ const TransactionForm: React.FC<Props> = ({
       setSaving(true);
 
       const body = {
-        transaction_type: type,           // "INCOME" | "EXPENSE"
-        category: Number(categoryId),     // id numérico
-        amount: amount.toString(),        // string -> backend la parsea
-        description: description.trim(),  // opcional
-        date,                             // 👈 ACA va tal cual el input: "YYYY-MM-DD"
+        transaction_type: transactionType, // 🔒 no cambia
+        category: Number(categoryId),
+        amount: amount.toString(),
+        description: description.trim(),
+        date,
       };
 
       const res = await authFetch(
-        `${API_BASE_URL}/api/accounts/${accountId}/transactions/`,
+        `${API_BASE_URL}/api/accounts/${accountId}/transactions/${transaction.id}/`,
         {
-          method: "POST",
+          method: "PATCH",
           body: JSON.stringify(body),
         }
       );
@@ -156,54 +189,75 @@ const TransactionForm: React.FC<Props> = ({
           dataJson?.detail ||
           dataJson?.error ||
           dataJson?.non_field_errors?.[0] ||
-          "No se pudo crear la transacción.";
+          "No se pudo actualizar la transacción.";
         throw new Error(backendError);
       }
 
-      const created = dataJson as Transaction;
-      onTransactionCreated(created);
-
-      // limpiamos solo lo que tiene sentido
-      setAmount("");
-      setDescription("");
-      // si querés, dejá la fecha seleccionada, si no:
-      // setDate("");
+      const updated = dataJson as Transaction;
+      onUpdated(updated);
+      onClose();
     } catch (err: any) {
-      setError(err.message || "Error desconocido al crear la transacción.");
+      setError(err.message || "Error desconocido al actualizar la transacción.");
     } finally {
       setSaving(false);
     }
   };
 
-  return (
-    <div className="bg-white rounded-2xl shadow p-6">
-      <h2 className="text-lg font-semibold mb-4">Agregar transacción</h2>
+  const handleDelete = async () => {
+    if (
+      !window.confirm(
+        "¿Seguro que querés eliminar esta transacción? Esta acción no se puede deshacer."
+      )
+    ) {
+      return;
+    }
 
-      <form onSubmit={handleSubmit} className="space-y-3 text-sm">
-        {/* Tipo */}
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => setType("EXPENSE")}
-            className={`w-full border rounded-lg p-2 text-xs ${
-              type === "EXPENSE"
-                ? "bg-rose-50 border-rose-300 text-rose-700 font-medium"
-                : "border-slate-200 text-slate-600"
+    try {
+      setDeleting(true);
+      setError(null);
+
+      const res = await authFetch(
+        `${API_BASE_URL}/api/accounts/${accountId}/transactions/${transaction.id}/`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!res.ok && res.status !== 204) {
+        const dataJson = await res.json().catch(() => null);
+        const backendError =
+          dataJson?.detail ||
+          dataJson?.error ||
+          "No se pudo eliminar la transacción.";
+        throw new Error(backendError);
+      }
+
+      onDeleted(transaction.id);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || "Error al eliminar la transacción.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const isIncome = transactionType === "INCOME";
+
+  return (
+    <Modal title="Editar transacción" onClose={onClose}>
+      <form onSubmit={handleSave} className="space-y-4 text-sm">
+        {/* Tipo (solo lectura) */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-500">Tipo de transacción</span>
+          <span
+            className={`px-2 py-1 rounded-full text-[11px] font-medium ${
+              isIncome
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                : "bg-rose-50 text-rose-700 border border-rose-200"
             }`}
           >
-            Egreso
-          </button>
-          <button
-            type="button"
-            onClick={() => setType("INCOME")}
-            className={`w-full border rounded-lg p-2 text-xs ${
-              type === "INCOME"
-                ? "bg-emerald-50 border-emerald-300 text-emerald-700 font-medium"
-                : "border-slate-200 text-slate-600"
-            }`}
-          >
-            Ingreso
-          </button>
+            {isIncome ? "Ingreso" : "Egreso"}
+          </span>
         </div>
 
         {/* Categoría */}
@@ -215,10 +269,14 @@ const TransactionForm: React.FC<Props> = ({
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
             className="w-full border rounded-lg p-2 text-sm"
+            disabled={
+              visibleCategories.length === 0 ||
+              (transactionType === "INCOME" && visibleCategories.length === 1)
+            }
           >
             {visibleCategories.length === 0 && (
               <option>
-                {type === "INCOME"
+                {transactionType === "INCOME"
                   ? "No hay categoría 'Ingreso' configurada"
                   : "No hay categorías disponibles"}
               </option>
@@ -264,7 +322,7 @@ const TransactionForm: React.FC<Props> = ({
           <input
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)} // 👈 guarda EXACTAMENTE el valor del input
+            onChange={(e) => setDate(e.target.value)}
             className="w-full border rounded-lg p-2 text-sm"
           />
         </div>
@@ -275,16 +333,36 @@ const TransactionForm: React.FC<Props> = ({
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:opacity-90 text-sm font-medium disabled:opacity-60"
-        >
-          {saving ? "Guardando..." : "Guardar"}
-        </button>
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={deleting}
+            className="px-3 py-2 rounded-lg border border-red-300 text-red-600 text-xs hover:bg-red-50 disabled:opacity-60"
+          >
+            {deleting ? "Eliminando..." : "Eliminar"}
+          </button>
+
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3 py-2 rounded-lg border text-xs text-slate-600 hover:bg-slate-50"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-3 py-2 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-500 disabled:opacity-60"
+            >
+              {saving ? "Guardando..." : "Guardar cambios"}
+            </button>
+          </div>
+        </div>
       </form>
-    </div>
+    </Modal>
   );
 };
 
-export default TransactionForm;
+export default EditTransactionModal;
