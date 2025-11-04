@@ -37,11 +37,26 @@ class AccountViewSet(viewsets.ModelViewSet):
     ViewSet para crear, ver y editar Cuentas.
     """
     serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAuthenticated, IsAccountOwner] 
+    permission_classes = [permissions.IsAuthenticated] 
 
     def get_queryset(self):
         # Filtramos para que un usuario solo vea las cuentas a las que pertenece
         return self.request.user.accounts.all().order_by("name")
+    
+    def get_permissions(self):
+        """
+        Añade permisos adicionales basados en la acción.
+        """
+        permission_list = super().get_permissions()
+
+        # 2. Si la acción es 'update', 'partial_update' o 'destroy'
+        #    (acciones que modifican la Cuenta), requerimos ser el dueño.
+        if self.action in ['update', 'partial_update', 'destroy']:
+            permission_list.append(IsAccountOwner())
+        
+        # 3. Para 'my_membership', 'members', 'list', 'retrieve', 'create'
+        #    solo se usa la lista base [IsAuthenticated].
+        return permission_list
 
     def perform_create(self, serializer):
         user = self.request.user
