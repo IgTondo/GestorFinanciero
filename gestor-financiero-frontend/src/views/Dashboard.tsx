@@ -2,12 +2,11 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "../context/AuthContext";
-import logoGesta from "../assets/logoGesta.png";
 import TransactionForm from "../components/TransactionForm";
 import TransactionList from "../components/TransactionList";
 import ChartExpenses from "../components/ChartExpenses";
 import ManageAccountModal from "../components/accounts/ManageAccountModal";
+import AuthenticatedLayout from "../AuthenticatedLayout";
 
 const API_BASE_URL = "http://localhost:8000";
 
@@ -51,7 +50,6 @@ export function getCategoryName(
 
 const Dashboard: React.FC = () => {
   const { accountId } = useParams<{ accountId: string }>();
-  const { logout } = useAuth();
 
   const [account, setAccount] = useState<{
     id: number;
@@ -363,30 +361,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img
-              src={logoGesta}
-              alt="Logo Gesta"
-              className="h-8 w-8 rounded-lg object-contain"
-            />
-            <span className="text-sm font-semibold tracking-tight text-slate-800">
-              Gesta
-            </span>
-          </div>
-
-          <button
-            onClick={logout}
-            className="text-xs md:text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition"
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
-
+    <AuthenticatedLayout>
       {/* Hero */}
       <div className="bg-gradient-to-r from-indigo-800 via-violet-700 to-indigo-900 text-white">
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -448,8 +423,8 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Main */}
-      <main className="flex-1">
+      {/* Contenido principal */}
+      <div className="flex-1">
         <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -512,7 +487,7 @@ const Dashboard: React.FC = () => {
                 </section>
               </div>
 
-              {/* Chart de gastos con flechas + animación por mes */}
+              {/* Chart de gastos */}
               <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-sm font-semibold text-slate-800">
@@ -587,7 +562,7 @@ const Dashboard: React.FC = () => {
                 </AnimatePresence>
               </section>
 
-              {/* Lista de transacciones (ordenada por fecha) */}
+              {/* Lista de transacciones */}
               <section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-sm font-semibold text-slate-800">
@@ -623,13 +598,12 @@ const Dashboard: React.FC = () => {
             </>
           )}
         </div>
-      </main>
+      </div>
 
       {account && accountId && (
         <ManageAccountModal
           isOpen={isManageOpen}
           accountId={accountId}
-          // 👇 Nombre general SIEMPRE sale de account.name
           currentName={account.name}
           isOwner={isOwner}
           onAccountRenamed={(newName: string) => {
@@ -649,7 +623,7 @@ const Dashboard: React.FC = () => {
           onClose={() => setIsManageOpen(false)}
         />
       )}
-    </div>
+    </AuthenticatedLayout>
   );
 };
 

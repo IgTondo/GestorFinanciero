@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AccountList } from "../components/accounts/AccountList";
 import { CreateAccountModal } from "../components/accounts/CreateAccountModal";
-import { useAuth } from "../context/AuthContext";
-import logoGesta from "../assets/logoGesta.png";
+import AuthenticatedLayout from "../AuthenticatedLayout";
 
 export interface Account {
   id: number;
@@ -28,14 +27,10 @@ export interface Account {
 const API_BASE_URL = "http://localhost:8000";
 
 export const AccountsPage: React.FC = () => {
-  const { logout } = useAuth();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-  
-
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -108,30 +103,7 @@ export const AccountsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col">
-      {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img
-              src={logoGesta}
-              alt="Logo Gesta"
-              className="h-8 w-8 rounded-lg object-contain"
-            />
-            <span className="text-sm font-semibold tracking-tight text-slate-800">
-              Gesta
-            </span>
-          </div>
-
-          <button
-            onClick={logout}
-            className="text-xs md:text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition"
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </header>
-
+    <AuthenticatedLayout>
       {/* Hero */}
       <div className="bg-gradient-to-r from-indigo-800 via-violet-700 to-indigo-900 text-white">
         <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -184,7 +156,7 @@ export const AccountsPage: React.FC = () => {
       </div>
 
       {/* Contenido principal */}
-      <main className="flex-1">
+      <div className="flex-1">
         <div className="max-w-6xl mx-auto px-4 py-8">
           {loading && (
             <div className="flex justify-center py-12">
@@ -213,13 +185,13 @@ export const AccountsPage: React.FC = () => {
             </>
           )}
         </div>
-      </main>
+      </div>
 
       <CreateAccountModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreated={handleAccountCreated}
       />
-    </div>
+    </AuthenticatedLayout>
   );
 };
