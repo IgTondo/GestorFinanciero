@@ -2,10 +2,22 @@ from rest_framework import serializers
 from .models import Transaction, Category
 from apps.users.models import Account
 from django.db.models import Q
+from datetime import datetime, date
+
+class SafeDateField(serializers.DateField):
+    """
+    Acepta tanto date como datetime al serializar.
+    Si viene un datetime, lo convierte a date antes de representarlo.
+    """
+    def to_representation(self, value):
+        if isinstance(value, datetime):
+            value = value.date()
+        return super().to_representation(value)
 
 class TransactionSerializer(serializers.ModelSerializer):
     account = serializers.PrimaryKeyRelatedField(read_only=True)
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+    date=SafeDateField()
     class Meta:
         model = Transaction
         fields = ['id', 'amount', 'date', 'description', 'category', 'account', 'transaction_type', 'created_by_rule']
