@@ -23,11 +23,12 @@ export default function LoginModal({ onClose }: LoginModalProps) {
       });
 
       // El backend devuelve { access, refresh }
-      const { access, refresh } = response.data;
+      const { access, refresh, isPremium } = response.data;
 
       if (access && refresh) {
         // 👇 NUEVO: guardamos el email del usuario logueado
         localStorage.setItem('userEmail', email);
+        localStorage.setItem('isPremium', isPremium);
 
         // esto sigue igual
         login(access, refresh);

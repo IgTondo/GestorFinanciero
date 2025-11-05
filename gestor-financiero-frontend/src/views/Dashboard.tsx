@@ -1,11 +1,12 @@
 // src/views/Dashboard.tsx
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import TransactionForm from "../components/TransactionForm";
 import TransactionList from "../components/TransactionList";
 import ChartExpenses from "../components/ChartExpenses";
 import ManageAccountModal from "../components/accounts/ManageAccountModal";
+import CustomCategoryModal from "../components/CustomCategoryModal";
 import AuthenticatedLayout from "../AuthenticatedLayout";
 
 const API_BASE_URL = "http://localhost:8000";
@@ -50,6 +51,11 @@ export function getCategoryName(
 
 const Dashboard: React.FC = () => {
   const { accountId } = useParams<{ accountId: string }>();
+  const navigate = useNavigate();
+
+  //const isPremium = localStorage.getItem("isPremium") === "true";
+  const isPremium =true;
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [account, setAccount] = useState<{
     id: number;
@@ -360,6 +366,18 @@ const Dashboard: React.FC = () => {
     setTransactions((prev) => [tx, ...prev]);
   };
 
+    const handleOpenCustomCategory = () => {
+  if (!accountId) return;
+
+  if (!isPremium) {
+    navigate("/suscripciones"); // placeholder
+    return;
+  }
+
+  setIsCategoryModalOpen(true);
+};
+
+
   return (
     <AuthenticatedLayout>
       {/* Hero */}
@@ -413,12 +431,14 @@ const Dashboard: React.FC = () => {
                   })}`}
             </span>
             <button
-              type="button"
-              onClick={() => setIsManageOpen(true)}
-              className="mt-2 px-3 py-1.5 rounded-lg border border-violet-200 text-xs text-violet-100 hover:bg-white/10"
-            >
-              Gestionar cuenta
-            </button>
+  type="button"
+  onClick={handleOpenCustomCategory}
+  className="px-3 py-1.5 rounded-lg border border-amber-300 text-xs text-amber-100 bg-amber-500/10 hover:bg-amber-400/20 flex items-center gap-1"
+>
+  <span className="text-[11px]">★</span>
+  Añadir categoría personalizada
+</button>
+
           </motion.div>
         </div>
       </div>
@@ -599,6 +619,17 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
+      {accountId && (
+  <CustomCategoryModal
+    isOpen={isCategoryModalOpen}
+    accountId={accountId}
+    onClose={() => setIsCategoryModalOpen(false)}
+    onCategoryCreated={(newCategory) => {
+      setCategories((prev) => [...prev, newCategory]);
+    }}
+    onError={(msg) => setError(msg)}
+  />
+)}
 
       {account && accountId && (
         <ManageAccountModal
