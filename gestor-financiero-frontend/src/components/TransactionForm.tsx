@@ -137,8 +137,8 @@ const TransactionForm: React.FC<Props> = ({
         transaction_type: type,           // "INCOME" | "EXPENSE"
         category: Number(categoryId),     // id numérico
         amount: amount.toString(),        // string -> backend la parsea
-        description: description.trim(),  // opcional
-        date,                             // 👈 ACA va tal cual el input: "YYYY-MM-DD"
+        description: description.trim(),  
+        date,                             // ACA va tal cual el input: "YYYY-MM-DD"
       };
 
       const res = await authFetch(
@@ -254,7 +254,7 @@ const TransactionForm: React.FC<Props> = ({
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full border rounded-lg p-2 text-sm"
-            placeholder="Detalle (opcional)"
+            placeholder="Descripción Breve/Título"
           />
         </div>
 
