@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "./context/AuthContext";
 import logoGesta from "./assets/logoGesta.png";
+import { Link } from "react-router-dom";
 
 interface AuthenticatedLayoutProps {
   children: React.ReactNode;
@@ -76,20 +77,22 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                   <span className="w-2 h-2 rounded-full bg-indigo-500" />
                   Cerrar sesión
                 </button>
-                <button
-                  type="button"
+                <Link
+                  to="/subscriptions"
+                  onClick={() => setIsMenuOpen(false)} // Opcional: cerrar menú al navegar
                   className="w-full text-left px-5 py-3 text-sm font-medium text-slate-800 hover:bg-indigo-50 flex items-center gap-3"
                 >
                   <span className="w-2 h-2 rounded-full bg-purple-500" />
                   Suscripciones
-                </button>
-                <button
-                  type="button"
+                </Link>
+                <Link
+                  to="/accounts" // 1. Redirige a /accounts
+                  onClick={() => setIsMenuOpen(false)} // 2. Cierra el menú al hacer clic
                   className="w-full text-left px-5 py-3 text-sm font-medium text-slate-800 hover:bg-indigo-50 flex items-center gap-3"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   Tus cuentas
-                </button>
+                </Link>
               </nav>
 
               <div className="px-5 py-4 border-t border-slate-100 text-[11px] text-slate-400">

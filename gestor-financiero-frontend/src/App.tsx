@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./views/landing_page_fin_gestor";
 import Dashboard from "./views/Dashboard";
 import { AccountsPage } from "./views/AccountsPage";
+import { SubscriptionsPage } from "./views/SubscriptionsPage";
 import { useAuth } from "./context/AuthContext";
 
 // Un componente simple para rutas protegidas
@@ -29,6 +30,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <AccountsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/subscriptions"
+        element={
+          <ProtectedRoute>
+            <SubscriptionsPage />
           </ProtectedRoute>
         }
       />
