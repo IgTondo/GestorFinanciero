@@ -8,6 +8,8 @@ import ChartExpenses from "../components/ChartExpenses";
 import ManageAccountModal from "../components/accounts/ManageAccountModal";
 import CustomCategoryModal from "../components/CustomCategoryModal";
 import AuthenticatedLayout from "../AuthenticatedLayout";
+import AutomationRulesPanel from "../components/AutomationRulesPanel";
+
 
 const API_BASE_URL = "http://localhost:8000";
 
@@ -370,7 +372,7 @@ const Dashboard: React.FC = () => {
   if (!accountId) return;
 
   if (!isPremium) {
-    navigate("/suscripciones"); // placeholder
+    navigate("/subscriptions"); // placeholder
     return;
   }
 
@@ -430,6 +432,13 @@ const Dashboard: React.FC = () => {
                     minimumFractionDigits: 2,
                   })}`}
             </span>
+            <button
+              type="button"
+              onClick={() => setIsManageOpen(true)}
+              className="mt-2 px-3 py-1.5 rounded-lg border border-violet-200 text-xs text-violet-100 hover:bg-white/10"
+            >
+              Gestionar cuenta
+            </button>
             <button
   type="button"
   onClick={handleOpenCustomCategory}
@@ -581,6 +590,20 @@ const Dashboard: React.FC = () => {
                   </motion.div>
                 </AnimatePresence>
               </section>
+
+              {!isLoading && !error && (
+                <>
+                  
+                  {isPremium && accountId && (
+                    <AutomationRulesPanel
+                      accountId={accountId}
+                      categories={categories}
+                    />
+                  )}
+
+                </>
+)}
+
 
               {/* Lista de transacciones */}
               <section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
