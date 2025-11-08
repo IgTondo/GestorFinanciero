@@ -27,8 +27,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
     'apps.users',
-    'apps.transactions'
+    'apps.transactions',
+    'apps.automation',
+    'django_q'
 ]
 
 REST_FRAMEWORK = {
@@ -39,6 +42,7 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -120,3 +124,28 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+Q_CLUSTER = {
+    'name': 'FinanceManagerCluster',
+    'workers': 4,  # Número de "trabajadores". 4 es un buen número para producción.
+    'timeout': 90,  # 90 segundos antes de que una tarea falle por timeout.
+    'retry': 120,  # 2 minutos de espera antes de reintentar una tarea fallida.
+    'queue_limit': 50,  # Límite de tareas en cola.
+    
+    # Le dice a django-q que use la base de datos 'default' de Django
+    # como "broker" (buzón), en lugar de Redis.
+    'orm': 'default', 
+    
+    # Evita que se ejecuten tareas programadas perdidas si el servidor 
+    # estuvo apagado. Si la regla era para el día 5 y el servidor 
+    # se enciende el día 8, no se ejecutará la tarea del día 5.
+    'catch_up': False, 
+    
+    # Configuración de logging 
+    'log_level': 'INFO',
+}
