@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.transactions',
     'apps.automation',
+    'apps.insights',
     'django_q'
 ]
 
