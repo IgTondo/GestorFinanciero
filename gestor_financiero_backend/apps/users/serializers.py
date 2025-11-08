@@ -70,7 +70,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'password', 'password2', 'tokens']
+        fields = ['role' ,'first_name', 'last_name', 'email', 'password', 'password2', 'tokens']
+        read_only_fields = ['role']
         extra_kwargs = {'password': {'write_only': True}}
         
     def get_tokens(self, user):
@@ -108,3 +109,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['first_name'] = user.first_name
 
         return token
+    
+    def validate(self, attrs):
+        # 1. Obtiene la respuesta base (los tokens 'access' y 'refresh')
+        data = super().validate(attrs)
+
+        # 2. Añade los datos extra del usuario ('self.user' está disponible aquí)
+        data['first_name'] = self.user.first_name
+        data['role'] = self.user.role
+        
+        return data
