@@ -165,8 +165,8 @@ export default function LandingPage() {
           <p className="text-gray-600 mt-2">Empieza gratis o elegí un plan premium para funciones avanzadas.</p>
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <CardPlan title="Gratis" price="0" perks={["Categorías predeterminadas", "Funcionalidades básicas completas", "Soporte por email"]} ctaText="Comenzar gratis" />
-            <CardPlan title="Pro" price="7" perks={["Categorías personalizadas", "Reportes inteligentes", "Soporte prioritario"]} ctaText="Pro: $7 mes" highlight/>
+            <CardPlan title="Gratis" price="" perks={["Categorías predeterminadas", "Funcionalidades básicas completas", "Soporte por email"]} ctaText="Comenzar gratis" />
+            <CardPlan title="Pro" price="10" perks={["Categorías personalizadas", "Reportes inteligentes", "Soporte prioritario"]} ctaText="Pro: 10USD mes" highlight/>
           </div>
         </section>
 

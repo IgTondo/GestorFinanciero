@@ -258,6 +258,71 @@ const AutomationRulesPanel: React.FC<AutomationRulesPanelProps> = ({
     }
   };
 
+  const deleteScheduledRule = async (rule: ScheduledRule) => {
+    if (!window.confirm(`¿Eliminar la regla "${rule.name}"?`)) return;
+
+    try {
+      let accessToken = localStorage.getItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      if (!accessToken) {
+        setError("No se encontró un access token. Iniciá sesión de nuevo.");
+        return;
+      }
+
+      let res = await fetch(
+        `${API_BASE_URL}/api/accounts/${accountId}/scheduled-rules/${rule.id}/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (res.status === 401 && refreshToken) {
+        const refreshRes = await fetch(
+          `${API_BASE_URL}/api/auth/token/refresh/`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh: refreshToken }),
+          }
+        );
+
+        if (refreshRes.ok) {
+          const data = await refreshRes.json();
+          const newAccess = data.access;
+          localStorage.setItem("accessToken", newAccess);
+          accessToken = newAccess;
+
+          res = await fetch(
+            `${API_BASE_URL}/api/accounts/${accountId}/scheduled-rules/${rule.id}/`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+        } else {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          throw new Error("Sesión expirada. Volvé a iniciar sesión.");
+        }
+      }
+
+      if (!res.ok && res.status !== 204)
+        throw new Error("Error al eliminar la regla.");
+
+      setScheduledRules((prev) => prev.filter((r) => r.id !== rule.id));
+    } catch (err: any) {
+      setError(err.message || "Error desconocido al eliminar la regla.");
+    }
+  };
+
   const toggleScheduledRuleActive = async (rule: ScheduledRule) => {
     try {
       let accessToken = localStorage.getItem("accessToken");
@@ -466,6 +531,13 @@ const AutomationRulesPanel: React.FC<AutomationRulesPanelProps> = ({
                   className="text-[11px] px-2 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
                 >
                   {rule.is_active ? "Pausar" : "Activar"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deleteScheduledRule(rule)}
+                  className="text-[11px] px-2 py-1 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
+                >
+                  Eliminar
                 </button>
               </div>
             </div>

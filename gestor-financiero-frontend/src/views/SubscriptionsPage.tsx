@@ -82,7 +82,7 @@ export const SubscriptionsPage: React.FC = () => {
             >
               <h3 className="text-lg font-semibold text-slate-700">Plan Pro</h3>
               <p className="text-3xl font-bold text-slate-900 my-2">
-                $10<span className="text-sm font-normal text-slate-500"> / mes</span>
+                10USD<span className="text-sm font-normal text-slate-500"> / mes</span>
               </p>
               <ul className="text-sm text-slate-600 list-disc list-inside space-y-1 mb-4">
                 <li>Cuentas ilimitadas</li>

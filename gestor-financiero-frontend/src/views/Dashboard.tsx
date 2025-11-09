@@ -55,8 +55,7 @@ const Dashboard: React.FC = () => {
   const { accountId } = useParams<{ accountId: string }>();
   const navigate = useNavigate();
 
-  //const isPremium = localStorage.getItem("isPremium") === "true";
-  const isPremium =true;
+  const isPremium = localStorage.getItem("isPremium") === "true";
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [account, setAccount] = useState<{

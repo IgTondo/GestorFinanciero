@@ -16,7 +16,7 @@ export default function CardPlan({ title, price, perks = [], ctaText, highlight 
           <h4 className="text-lg font-semibold">{title}</h4>
           <p className="text-sm text-gray-500">Pago mensual</p>
         </div>
-        <div className="text-2xl font-bold">${price}</div>
+        <div className="text-2xl font-bold">{price ? price+"USD" : "Gratis"}</div>
       </div>
 
       <ul className="mt-4 space-y-2 text-sm text-gray-600">

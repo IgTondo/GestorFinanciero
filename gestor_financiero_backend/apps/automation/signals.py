@@ -68,15 +68,15 @@ def execute_event_rules(sender, instance, created, **kwargs):
 
         # 1. Transacción de GASTO (Salida del origen)
         #    La categoría de origen es la misma que disparó la regla.
-        Transaction.objects.create(
-            account=transaction.account,
-            category=transaction.category, # <-- Categoría Origen (ej: "Sueldo")
-            amount=calculated_amount,
-            date=transaction.date,
-            description=f"{description} (Salida)",
-            transaction_type=TransactionType.EXPENSE, # <-- GASTO
-            created_by_rule=True 
-        )
+        # Transaction.objects.create(
+        #     account=transaction.account,
+        #     category=transaction.category, # <-- Categoría Origen (ej: "Sueldo")
+        #     amount=calculated_amount,
+        #     date=transaction.date,
+        #     description=f"{description} (Salida)",
+        #     transaction_type=TransactionType.EXPENSE, # <-- GASTO
+        #     created_by_rule=True 
+        # )
         
         # 2. Transacción de INGRESO (Entrada al destino)
         #    La categoría de destino es la definida en la regla.
@@ -86,7 +86,7 @@ def execute_event_rules(sender, instance, created, **kwargs):
             amount=calculated_amount,
             date=transaction.date,
             description=f"{description} (Entrada)",
-            transaction_type=TransactionType.INCOME, # <-- INGRESO
+            transaction_type=TransactionType.EXPENSE, # <-- INGRESO
             created_by_rule=True
         )
 
