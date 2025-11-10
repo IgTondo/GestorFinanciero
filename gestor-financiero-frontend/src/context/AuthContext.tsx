@@ -33,9 +33,11 @@ export const AuthProvider = ({ children }: AuthProviderProps): React.ReactElemen
   
     const navigate = useNavigate();
     //Acepta el usuario y le envia al dashboard
-    const login = (accessToken: string, refreshToken: string) => {
+    const login = (accessToken: string, refreshToken: string, role: String) => {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken',refreshToken);
+        const isPremium = role === 'PREMIUM' ? 'true' : 'false';
+        localStorage.setItem('isPremium', isPremium);
         setIsAuthenticated(true);
         navigate('/accounts');
     };

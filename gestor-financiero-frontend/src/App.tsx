@@ -4,6 +4,7 @@ import Dashboard from "./views/Dashboard";
 import { AccountsPage } from "./views/AccountsPage";
 import { SubscriptionsPage } from "./views/SubscriptionsPage";
 import { useAuth } from "./context/AuthContext";
+import { RecommendationsPage } from "./views/RecommendationsPage";
 
 // Un componente simple para rutas protegidas
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -47,6 +48,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/recommendations"
+        element={
+          <ProtectedRoute>
+            <RecommendationsPage />
           </ProtectedRoute>
         }
       />

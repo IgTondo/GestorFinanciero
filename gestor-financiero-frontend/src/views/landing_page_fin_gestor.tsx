@@ -6,8 +6,6 @@ import Logo from "../components/Logo";
 import Feature from "../components/Feature";
 import Step from "../components/Step";
 import CardPlan from "../components/CardPlan";
-import Modal from "../components/Modal";
-import AuthForm from "../components/AuthForm";
 import LoginModal from "../components/LoginModal";
 import RegisterModal from "../components/RegisterModal";
 
@@ -166,13 +164,13 @@ export default function LandingPage() {
 
           <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <CardPlan title="Gratis" price="" perks={["Categorías predeterminadas", "Funcionalidades básicas completas", "Soporte por email"]} ctaText="Comenzar gratis" />
-            <CardPlan title="Pro" price="10" perks={["Categorías personalizadas", "Reportes inteligentes", "Soporte prioritario"]} ctaText="Pro: 10USD mes" highlight/>
+            <CardPlan title="Pro" price="10" perks={["Categorías personalizadas", "Reportes inteligentes", "Soporte prioritario"]} ctaText="Pro: 10USD mes" highlight />
           </div>
         </section>
 
         {/* Footer */}
         <footer className="mt-12 py-8 text-center text-sm text-gray-500">
-          © {new Date().getFullYear()} Gesta 
+          © {new Date().getFullYear()} Gesta
         </footer>
       </main>
 

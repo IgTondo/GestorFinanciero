@@ -69,14 +69,6 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
               </div>
 
               <nav className="flex-1 py-4">
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="w-full text-left px-5 py-3 text-sm font-medium text-slate-800 hover:bg-indigo-50 flex items-center gap-3"
-                >
-                  <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                  Cerrar sesión
-                </button>
                 <Link
                   to="/subscriptions"
                   onClick={() => setIsMenuOpen(false)} // Opcional: cerrar menú al navegar
@@ -91,10 +83,27 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
                   className="w-full text-left px-5 py-3 text-sm font-medium text-slate-800 hover:bg-indigo-50 flex items-center gap-3"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  Tus cuentas
+                  Mis cuentas
+                </Link>
+                <Link
+                  to="/recommendations"
+                  onClick={() => setIsMenuOpen(false)} // Opcional: cerrar menú al navegar
+                  className="w-full text-left px-5 py-3 text-sm font-medium text-slate-800 hover:bg-indigo-50 flex items-center gap-3"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  Recomendaciones
                 </Link>
               </nav>
-
+              <div > {/* Le ponemos un padding para que no quede pegado al footer */}
+                < button
+                  type="button"
+                  onClick={logout}
+                  className="w-full text-left px-5 py-3 text-sm font-medium text-slate-800 hover:bg-indigo-50 flex items-center gap-3 border-t border-slate-200"
+                >
+                  <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                  Cerrar sesión
+                </button>
+              </div>
               <div className="px-5 py-4 border-t border-slate-100 text-[11px] text-slate-400">
                 © {new Date().getFullYear()} Gesta
               </div>
@@ -131,13 +140,6 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({
               </span>
             </div>
           </div>
-
-          <button
-            onClick={logout}
-            className="text-xs md:text-sm px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition"
-          >
-            Cerrar sesión
-          </button>
         </div>
       </header>
 

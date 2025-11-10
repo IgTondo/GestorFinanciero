@@ -102,23 +102,27 @@ const Dashboard: React.FC = () => {
   const monthLabel = `${MONTH_LABELS[selectedMonth]} ${selectedYear}`;
 
   const handlePrevMonth = () => {
-    setSelectedMonth((prev) => {
-      if (prev === 0) {
-        setSelectedYear((y) => y - 1);
-        return 11;
-      }
-      return prev - 1;
-    });
+    // Lee el estado actual
+    if (selectedMonth === 0) {
+      // Si es Enero, actualiza ambos
+      setSelectedMonth(11); // Diciembre
+      setSelectedYear(selectedYear - 1);
+    } else {
+      // Si no, solo actualiza el mes
+      setSelectedMonth(selectedMonth - 1);
+    }
   };
 
   const handleNextMonth = () => {
-    setSelectedMonth((prev) => {
-      if (prev === 11) {
-        setSelectedYear((y) => y + 1);
-        return 0;
-      }
-      return prev + 1;
-    });
+    // Lee el estado actual
+    if (selectedMonth === 11) {
+      // Si es Diciembre, actualiza ambos
+      setSelectedMonth(0); // Enero
+      setSelectedYear(selectedYear + 1);
+    } else {
+      // Si no, solo actualiza el mes
+      setSelectedMonth(selectedMonth + 1);
+    }
   };
 
   const monthlyTransactions = useMemo(() => {
@@ -367,302 +371,323 @@ const Dashboard: React.FC = () => {
     setTransactions((prev) => [tx, ...prev]);
   };
 
-    const handleOpenCustomCategory = () => {
-  if (!accountId) return;
+  const handleOpenCustomCategory = () => {
+    if (!accountId) return;
 
-  if (!isPremium) {
-    navigate("/subscriptions"); // placeholder
-    return;
-  }
+    if (!isPremium) {
+      navigate("/subscriptions"); // placeholder
+      return;
+    }
 
-  setIsCategoryModalOpen(true);
-};
+    setIsCategoryModalOpen(true);
+  };
 
 
   return (
     <AuthenticatedLayout>
       {/* Hero */}
-      <div className="bg-gradient-to-r from-indigo-800 via-violet-700 to-indigo-900 text-white">
-        <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      < div className="bg-gradient-to-r from-indigo-800 via-violet-700 to-indigo-900 text-white" >
+        <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between" >
           <div>
             <motion.p
               className="text-xs uppercase tracking-[0.2em] text-violet-200/80 mb-1"
-              initial={{ opacity: 0, y: 6 }}
+              initial={{ opacity: 0, y: 6 }
+              }
               animate={{ opacity: 1, y: 0 }}
             >
               Dashboard de cuenta
             </motion.p>
 
-            <motion.h1
+            < motion.h1
               className="text-2xl md:text-3xl font-semibold tracking-tight"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              {loadingAccount
-                ? "Cargando cuenta..."
-                : account?.display_name || account?.name || "Cuenta"}
+              {
+                loadingAccount
+                  ? "Cargando cuenta..."
+                  : account?.display_name || account?.name || "Cuenta"
+              }
             </motion.h1>
 
-            <motion.p
+            < motion.p
               className="mt-2 text-sm md:text-base text-violet-100/90 max-w-xl"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
               Visualizá los movimientos, ingresos y gastos de esta cuenta en
-              particular. Usá este espacio para seguir de cerca un objetivo
+              particular.Usá este espacio para seguir de cerca un objetivo
               financiero específico.
             </motion.p>
           </div>
 
-          <motion.div
+          < motion.div
             className="mt-3 md:mt-0 flex flex-col items-start md:items-end gap-1"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
           >
-            <span className="text-xs text-violet-100/90">
+            <span className="text-xs text-violet-100/90" >
               Saldo estimado de la cuenta
             </span>
-            <span className="text-2xl font-semibold">
-              {isNaN(balance)
-                ? "—"
-                : `$ ${balance.toLocaleString("es-UY", {
+            < span className="text-2xl font-semibold" >
+              {
+                isNaN(balance)
+                  ? "—"
+                  : `$ ${balance.toLocaleString("es-UY", {
                     minimumFractionDigits: 2,
-                  })}`}
+                  })}`
+              }
             </span>
-            <button
+            < button
               type="button"
               onClick={() => setIsManageOpen(true)}
               className="mt-2 px-3 py-1.5 rounded-lg border border-violet-200 text-xs text-violet-100 hover:bg-white/10"
             >
               Gestionar cuenta
             </button>
-            <button
-  type="button"
-  onClick={handleOpenCustomCategory}
-  className="px-3 py-1.5 rounded-lg border border-amber-300 text-xs text-amber-100 bg-amber-500/10 hover:bg-amber-400/20 flex items-center gap-1"
->
-  <span className="text-[11px]">★</span>
-  Añadir categoría personalizada
-</button>
+            < button
+              type="button"
+              onClick={handleOpenCustomCategory}
+              className="px-3 py-1.5 rounded-lg border border-amber-300 text-xs text-amber-100 bg-amber-500/10 hover:bg-amber-400/20 flex items-center gap-1"
+            >
+              <span className="text-[11px]" >★</span>
+              Añadir categoría personalizada
+            </button>
 
           </motion.div>
         </div>
       </div>
 
       {/* Contenido principal */}
-      <div className="flex-1">
-        <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+      <div className="flex-1" >
+        <div className="max-w-6xl mx-auto px-4 py-8 space-y-6" >
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm" >
               {error}
             </div>
           )}
 
-          {isLoading && !error && (
-            <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-700" />
-            </div>
-          )}
+          {
+            isLoading && !error && (
+              <div className="flex justify-center py-12" >
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-700" />
+              </div>
+            )
+          }
 
-          {!isLoading && !error && (
-            <>
-              {/* Form + resumen */}
-              <div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)]">
-                <section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
-                  <h2 className="text-sm font-semibold text-slate-800 mb-3">
-                    Registrar movimiento
-                  </h2>
-                  <p className="text-xs text-slate-500 mb-4">
-                    Agregá ingresos o gastos para mantener al día esta cuenta.
-                  </p>
-
-                  <TransactionForm
-                    accountId={accountId!}
-                    categories={categories}
-                    onTransactionCreated={handleTransactionCreated}
-                  />
-                </section>
-
-                <section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 flex flex-col justify-between">
-                  <div>
-                    <h2 className="text-sm font-semibold text-slate-800 mb-3">
-                      Resumen rápido
+          {
+            !isLoading && !error && (
+              <>
+                {/* Form + resumen */}
+                < div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)]" >
+                  <section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4" >
+                    <h2 className="text-sm font-semibold text-slate-800 mb-3" >
+                      Registrar movimiento
                     </h2>
-                    <p className="text-xs text-slate-500 mb-4">
-                      Un vistazo rápido al estado de esta cuenta.
+                    < p className="text-xs text-slate-500 mb-4" >
+                      Agregá ingresos o gastos para mantener al día esta cuenta.
                     </p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-500">Movimientos</span>
-                        <span className="font-medium text-slate-800">
-                          {transactions.length}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-500">Saldo estimado</span>
-                        <span className="font-medium text-emerald-600">
-                          {isNaN(balance)
-                            ? "—"
-                            : `$ ${balance.toLocaleString("es-UY", {
-                                minimumFractionDigits: 2,
-                              })}`}
-                        </span>
+
+                    < TransactionForm
+                      accountId={accountId!}
+                      categories={categories}
+                      onTransactionCreated={handleTransactionCreated}
+                    />
+                  </section>
+
+                  < section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4 flex flex-col justify-between" >
+                    <div>
+                      <h2 className="text-sm font-semibold text-slate-800 mb-3" >
+                        Resumen rápido
+                      </h2>
+                      < p className="text-xs text-slate-500 mb-4" >
+                        Un vistazo rápido al estado de esta cuenta.
+                      </p>
+                      < div className="space-y-2 text-sm" >
+                        <div className="flex items-center justify-between" >
+                          <span className="text-slate-500" > Movimientos </span>
+                          < span className="font-medium text-slate-800" >
+                            {transactions.length}
+                          </span>
+                        </div>
+                        < div className="flex items-center justify-between" >
+                          <span className="text-slate-500" > Saldo estimado </span>
+                          < span className="font-medium text-emerald-600" >
+                            {
+                              isNaN(balance)
+                                ? "—"
+                                : `$ ${balance.toLocaleString("es-UY", {
+                                  minimumFractionDigits: 2,
+                                })}`
+                            }
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </section>
-              </div>
-
-              {/* Chart de gastos */}
-              <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-sm font-semibold text-slate-800">
-                    Distribución de gastos
-                  </h2>
-
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={handlePrevMonth}
-                      className="p-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md hover:opacity-90 transition"
-                      aria-label="Mes anterior"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 19l-7-7 7-7"
-                        />
-                      </svg>
-                    </button>
-
-                    <span className="text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent capitalize">
-                      {monthLabel}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={handleNextMonth}
-                      className="p-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md hover:opacity-90 transition"
-                      aria-label="Mes siguiente"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </button>
-                  </div>
+                  </section>
                 </div>
 
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={`${selectedYear}-${selectedMonth}`}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.25 }}
-                    className="w-full h-[300px]"
-                  >
-                    <ChartExpenses
-                      transactions={monthlyTransactions}
-                      categories={categories}
-                    />
-                  </motion.div>
-                </AnimatePresence>
-              </section>
+                {/* Chart de gastos */}
+                <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6" >
+                  <div className="flex items-center justify-between mb-3" >
+                    <h2 className="text-sm font-semibold text-slate-800" >
+                      Distribución de gastos
+                    </h2>
 
-              {!isLoading && !error && (
-                <>
-                  
-                  {isPremium && accountId && (
-                    <AutomationRulesPanel
-                      accountId={accountId}
-                      categories={categories}
-                    />
+                    < div className="flex items-center gap-3" >
+                      <button
+                        type="button"
+                        onClick={handlePrevMonth}
+                        className="p-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md hover:opacity-90 transition"
+                        aria-label="Mes anterior"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 19l-7-7 7-7"
+                          />
+                        </svg>
+                      </button>
+
+                      < span className="text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent capitalize" >
+                        {monthLabel}
+                      </span>
+
+                      < button
+                        type="button"
+                        onClick={handleNextMonth}
+                        className="p-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md hover:opacity-90 transition"
+                        aria-label="Mes siguiente"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  < AnimatePresence mode="wait" >
+                    <motion.div
+                      key={`${selectedYear}-${selectedMonth}`}
+                      initial={{ opacity: 0, x: 20 }
+                      }
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.25 }}
+                      className="w-full h-[300px]"
+                    >
+                      <ChartExpenses
+                        transactions={monthlyTransactions}
+                        categories={categories}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+                </section>
+
+                {
+                  !isLoading && !error && (
+                    <>
+
+                      {isPremium && accountId && (
+                        <AutomationRulesPanel
+                          accountId={accountId}
+                          categories={categories}
+                        />
+                      )
+                      }
+
+                    </>
                   )}
 
-                </>
-)}
 
+                {/* Lista de transacciones */}
+                <section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4" >
+                  <div className="flex items-center justify-between mb-3" >
+                    <h2 className="text-sm font-semibold text-slate-800" >
+                      Movimientos de la cuenta
+                    </h2>
+                    < span className="text-[11px] text-slate-500" >
+                      Últimos movimientos primero
+                    </span>
+                  </div>
 
-              {/* Lista de transacciones */}
-              <section className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-sm font-semibold text-slate-800">
-                    Movimientos de la cuenta
-                  </h2>
-                  <span className="text-[11px] text-slate-500">
-                    Últimos movimientos primero
-                  </span>
-                </div>
-
-                {accountId && (
-                  <TransactionList
-                    accountId={accountId}
-                    transactions={[...transactions].sort(
-                      (a, b) =>
-                        new Date(b.date).getTime() -
-                        new Date(a.date).getTime()
+                  {
+                    accountId && (
+                      <TransactionList
+                        accountId={accountId}
+                        transactions={
+                          [...transactions].sort(
+                            (a, b) =>
+                              new Date(b.date).getTime() -
+                              new Date(a.date).getTime()
+                          )
+                        }
+                        categories={categories}
+                        onTransactionUpdated={(updated) => {
+                          setTransactions((prev) =>
+                            prev.map((t) => (t.id === updated.id ? updated : t))
+                          );
+                        }
+                        }
+                        onTransactionDeleted={(id) => {
+                          setTransactions((prev) =>
+                            prev.filter((t) => t.id !== id)
+                          );
+                        }}
+                      />
                     )}
-                    categories={categories}
-                    onTransactionUpdated={(updated) => {
-                      setTransactions((prev) =>
-                        prev.map((t) => (t.id === updated.id ? updated : t))
-                      );
-                    }}
-                    onTransactionDeleted={(id) => {
-                      setTransactions((prev) =>
-                        prev.filter((t) => t.id !== id)
-                      );
-                    }}
-                  />
-                )}
-              </section>
-            </>
-          )}
+                </section>
+              </>
+            )}
         </div>
-      </div>
-      {accountId && (
-  <CustomCategoryModal
-    isOpen={isCategoryModalOpen}
-    accountId={accountId}
-    onClose={() => setIsCategoryModalOpen(false)}
-    onCategoryCreated={(newCategory) => {
-      setCategories((prev) => [...prev, newCategory]);
-    }}
-    onError={(msg) => setError(msg)}
-  />
-)}
+      </div >
+      {
+        accountId && (
+          <CustomCategoryModal
+            isOpen={isCategoryModalOpen}
+            accountId={accountId}
+            onClose={() => setIsCategoryModalOpen(false)
+            }
+            onCategoryCreated={(newCategory) => {
+              setCategories((prev) => [...prev, newCategory]);
+            }}
+            onError={(msg) => setError(msg)}
+          />
+        )
+      }
 
-      {account && accountId && (
-        <ManageAccountModal
-          isOpen={isManageOpen}
-          accountId={accountId}
-          currentName={account.name}
-          isOwner={isOwner}
-          onAccountRenamed={(newName: string) => {
-            setAccount((prev) =>
-              prev
-                ? {
+      {
+        account && accountId && (
+          <ManageAccountModal
+            isOpen={isManageOpen}
+            accountId={accountId}
+            currentName={account.name}
+            isOwner={isOwner}
+            onAccountRenamed={(newName: string) => {
+              setAccount((prev) =>
+                prev
+                  ? {
                     ...prev,
                     name: newName,
                     display_name:
@@ -670,13 +695,15 @@ const Dashboard: React.FC = () => {
                         ? prev.display_name
                         : newName,
                   }
-                : prev
-            );
-          }}
-          onClose={() => setIsManageOpen(false)}
-        />
-      )}
-    </AuthenticatedLayout>
+                  : prev
+              );
+            }
+            }
+            onClose={() => setIsManageOpen(false)}
+          />
+        )
+      }
+    </AuthenticatedLayout >
   );
 };
 

@@ -23,16 +23,14 @@ export default function LoginModal({ onClose }: LoginModalProps) {
       });
 
       // El backend devuelve { access, refresh }
-      const { access, refresh, role } = response.data;
+      const {access, refresh, role} = response.data;
 
       if (access && refresh) {
         // 👇 NUEVO: guardamos el email del usuario logueado
-        const isPremium = role === 'PREMIUM' ? 'true' : 'false';
         localStorage.setItem('userEmail', email);
-        localStorage.setItem('isPremium', isPremium);
 
         // esto sigue igual
-        login(access, refresh);
+        login(access, refresh, role);
         onClose();
       } else {
         setError('No se recibió un token. Intenta de nuevo.');
