@@ -7,7 +7,7 @@ import AuthenticatedLayout from "../AuthenticatedLayout";
 export interface Recommendation {
     id: number;
     title: string;
-    description: string;
+    message: string;
     // Puedes agregar más campos como 'priority', 'category', etc.
 }
 
@@ -172,7 +172,7 @@ export const RecommendationsPage: React.FC = () => {
                                                             {rec.title}
                                                         </h4>
                                                         < p className="text-sm text-slate-600 mt-1" >
-                                                            {rec.description}
+                                                            {rec.message}
                                                         </p>
                                                     </motion.div>
                                                 ))}

@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+import dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,6 +36,10 @@ INSTALLED_APPS = [
     'apps.insights',
     'django_q'
 ]
+
+env_path = BASE_DIR.parent / '.env'
+dotenv.read_dotenv(env_path)
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
