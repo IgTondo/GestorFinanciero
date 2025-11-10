@@ -95,13 +95,13 @@ class Command(BaseCommand):
             for _ in range(random.randint(0, 3)):
                 cat = random.choice([cat_comida, cat_ocio, cat_transporte])
                 if cat == cat_comida:
-                    amount = Decimal(random.uniform(8.0, 35.0)).quantize(Decimal('0.01'))
+                    amount = Decimal(random.uniform(65.0, 500.0)).quantize(Decimal('0.01'))
                     desc = random.choice(["Almuerzo oficina", "Café", "Supermercado chico"])
                 elif cat == cat_transporte:
-                    amount = Decimal(random.uniform(5.0, 20.0)).quantize(Decimal('0.01'))
+                    amount = Decimal(random.uniform(50.0, 450.0)).quantize(Decimal('0.01'))
                     desc = random.choice(["Boleto", "Uber a casa", "Nafta"])
                 else: # Ocio
-                    amount = Decimal(random.uniform(15.0, 75.0)).quantize(Decimal('0.01'))
+                    amount = Decimal(random.uniform(150.0, 750.0)).quantize(Decimal('0.01'))
                     desc = random.choice(["Cine", "Salida con amigos", "Compra online"])
                 
                 transactions_to_create.append(

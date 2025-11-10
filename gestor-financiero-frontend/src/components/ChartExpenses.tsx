@@ -24,6 +24,14 @@ const COLORS = [
   "#3B82F6",
 ];
 
+// 👇 HE CREADO ESTA FUNCIÓN PARA REUTILIZARLA
+const formatValue = (value: number | string) => {
+  return Number(value).toLocaleString("es-UY", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 const ChartExpenses: React.FC<Props> = ({ transactions, categories }) => {
   const data = useMemo(() => {
     const totals: Record<string, number> = {};
@@ -40,6 +48,12 @@ const ChartExpenses: React.FC<Props> = ({ transactions, categories }) => {
         }
       });
 
+    // 👇 AQUÍ REDONDEAMOS EL VALOR ANTES DE PASARLO AL GRÁFICO
+    //    Aunque el formateo de la etiqueta y el tooltip lo harían
+    //    visualmente, redondear la data aquí es más limpio y previene
+    //    que el "label" por defecto (si se usara) muestre decimales largos.
+    //    (Actualización: `recharts` prefiere formatear en el label/tooltip,
+    //    así que dejaremos la data precisa y formatearemos en el render)
     return Object.entries(totals).map(([name, value]) => ({ name, value }));
   }, [transactions, categories]);
 
@@ -61,13 +75,19 @@ const ChartExpenses: React.FC<Props> = ({ transactions, categories }) => {
           cx="50%"
           cy="50%"
           outerRadius={100}
-          label
+          // 👇 ESTE ES EL CAMBIO PRINCIPAL
+          // Le pasamos una función a 'label'
+          label={(entry) => formatValue(entry.value)}
         >
           {data.map((_, index) => (
             <Cell key={index} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>
-        <Tooltip formatter={(v) => `$ ${v}`} />
+
+        <Tooltip
+          // Usamos la misma función, pero agregamos el signo '$'
+          formatter={(value) => `$ ${formatValue(value)}`}
+        />
         <Legend />
       </PieChart>
     </ResponsiveContainer>
